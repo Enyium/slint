@@ -470,6 +470,39 @@ jobs:
                   name: cpp_bin-windows
             - uses: actions/download-artifact@v4
               with:
+                  name: cpp_mcu_bin-Linux-X64-riscv32imac-esp-espidf
+            - uses: actions/download-artifact@v4
+              with:
+                  name: cpp_mcu_bin-Linux-X64-riscv32imafc-esp-espidf
+            - uses: actions/download-artifact@v4
+              with:
+                  name: cpp_mcu_bin-Linux-X64-riscv32imc-esp-espidf
+            - uses: actions/download-artifact@v4
+              with:
+                  name: cpp_mcu_bin-Linux-X64-thumbv7em-none-eabihf
+            - uses: actions/download-artifact@v4
+              with:
+                  name: cpp_mcu_bin-Linux-X64-xtensa-esp32s3-none-elf
+            - uses: actions/download-artifact@v4
+              with:
+                  name: cpp_mcu_bin-Windows-X64-riscv32imac-esp-espidf
+            - uses: actions/download-artifact@v4
+              with:
+                  name: cpp_mcu_bin-Windows-X64-riscv32imafc-esp-espidf
+            - uses: actions/download-artifact@v4
+              with:
+                  name: cpp_mcu_bin-Windows-X64-riscv32imc-esp-espidf
+            - uses: actions/download-artifact@v4
+              with:
+                  name: cpp_mcu_bin-Windows-X64-thumbv7em-none-eabihf
+            - uses: actions/download-artifact@v4
+              with:
+                  name: cpp_mcu_bin-Windows-X64-xtensa-esp32s3-none-elf
+            - uses: actions/download-artifact@v4
+              with:
+                  name: cpp_mcu_bin-macOS-X64-thumbv7em-none-eabihf
+            - uses: actions/download-artifact@v4
+              with:
                   name: slint-viewer-linux
             - uses: actions/download-artifact@v4
               with:
@@ -502,7 +535,7 @@ jobs:
               run: |
                   mkdir artifacts
                   mv Slint-cpp-*-win64*.exe artifacts/
-                  mv Slint-cpp-*-Linux-x86_64.tar.gz artifacts/
+                  mv Slint-cpp-*.tar.gz artifacts/
                   mv slint-viewer-linux.tar.gz artifacts/
                   mv slint-viewer-armv7-unknown-linux-gnueabihf.tar.gz artifacts/
                   mv slint-viewer-aarch64-unknown-linux-gnu.tar.gz artifacts/
