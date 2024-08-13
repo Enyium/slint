@@ -123,6 +123,7 @@ export component TouchArea {
     out property <length> pressed_x;
     out property <length> pressed_y;
     in property <MouseCursor> mouse-cursor;
+    in property <bool> event-passthrough;
     callback clicked;
     callback double-clicked;
     callback moved;

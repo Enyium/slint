@@ -549,6 +549,7 @@ pub struct TouchArea {
     pub moved: Callback<VoidArg>,
     pub pointer_event: Callback<PointerEventArg>,
     pub scroll_event: Callback<PointerScrollEventArg, EventResult>,
+    pub event_passthrough: Property<bool>,
     /// FIXME: remove this
     pub cached_rendering_data: CachedRenderingData,
     /// true when we are currently grabbing the mouse
@@ -586,7 +587,11 @@ impl Item for TouchArea {
                 x.set_mouse_cursor(self.mouse_cursor());
             }
         }
-        InputEventFilterResult::ForwardAndInterceptGrab
+        if self.event_passthrough() {
+            InputEventFilterResult::ForwardEvent
+        } else {
+            InputEventFilterResult::ForwardAndInterceptGrab
+        }
     }
 
     fn input_event(
@@ -605,9 +610,13 @@ impl Item for TouchArea {
             return InputEventResult::EventIgnored;
         }
 
+        let passthrough = self.event_passthrough();
+
         match event {
             MouseEvent::Pressed { position, button, .. } => {
-                self.grabbed.set(true);
+                if !passthrough {
+                    self.grabbed.set(true);
+                }
                 if button == PointerEventButton::Left {
                     Self::FIELD_OFFSETS.pressed_x.apply_pin(self).set(position.x_length());
                     Self::FIELD_OFFSETS.pressed_y.apply_pin(self).set(position.y_length());
@@ -619,7 +628,11 @@ impl Item for TouchArea {
                     modifiers: window_adapter.window().0.modifiers.get().into(),
                 },));
 
-                InputEventResult::GrabMouse
+                if passthrough {
+                    InputEventResult::EventIgnored
+                } else {
+                    InputEventResult::GrabMouse
+                }
             }
             MouseEvent::Exit => {
                 Self::FIELD_OFFSETS.pressed.apply_pin(self).set(false);
@@ -631,7 +644,11 @@ impl Item for TouchArea {
                     },));
                 }
 
-                InputEventResult::EventAccepted
+                if passthrough {
+                    InputEventResult::EventIgnored
+                } else {
+                    InputEventResult::EventAccepted
+                }
             }
 
             MouseEvent::Released { button, position, click_count } => {
@@ -656,7 +673,11 @@ impl Item for TouchArea {
                     modifiers: window_adapter.window().0.modifiers.get().into(),
                 },));
 
-                InputEventResult::EventAccepted
+                if passthrough {
+                    InputEventResult::EventIgnored
+                } else {
+                    InputEventResult::EventAccepted
+                }
             }
             MouseEvent::Moved { .. } => {
                 Self::FIELD_OFFSETS.pointer_event.apply_pin(self).call(&(PointerEvent {
@@ -668,7 +689,11 @@ impl Item for TouchArea {
                     Self::FIELD_OFFSETS.moved.apply_pin(self).call(&());
                     InputEventResult::GrabMouse
                 } else {
-                    InputEventResult::EventAccepted
+                    if passthrough {
+                        InputEventResult::EventIgnored
+                    } else {
+                        InputEventResult::EventAccepted
+                    }
                 };
             }
             MouseEvent::Wheel { delta_x, delta_y, .. } => {

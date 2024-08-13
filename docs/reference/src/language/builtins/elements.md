@@ -846,6 +846,9 @@ When not part of a layout, its width or height default to 100% of the parent ele
 -   **`mouse-x`**, **`mouse-y`** (_out_ _length_): Set by the `TouchArea` to the position of the mouse within it.
 -   **`pressed-x`**, **`pressed-y`** (_out_ _length_): Set by the `TouchArea` to the position of the mouse at the moment it was last pressed.
 -   **`pressed`** (_out_ _bool_): Set to `true` by the `TouchArea` when the mouse is pressed over it.
+-   **`event-passthrough`** (_in_ _bool_): Set to `true` to change `TouchArea`'s behaviour to pass through all events to elements underneath.
+    The `pointer-event` callbacks still invoked for every event, but clicks are not recognized by this `TouchArea` and the `clicked` and
+    `double-clicked` callbacks are not invoked.
 
 ### Callbacks
 
