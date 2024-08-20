@@ -1572,6 +1572,16 @@ pub fn run_event_loop() -> Result<(), PlatformError> {
     i_slint_backend_selector::with_platform(|b| b.run_event_loop())
 }
 
+/// Spawns a [`Future`] to execute in the Slint event loop.
+///
+/// See the documentation of `slint::spawn_local()` for more info
+pub fn spawn_local<F: core::future::Future + 'static>(
+    fut: F,
+) -> Result<JoinHandle<F::Output>, EventLoopError> {
+    i_slint_backend_selector::with_global_context(|ctx| ctx.spawn_local(fut))
+        .map_err(|_| EventLoopError::NoEventLoopProvider)?
+}
+
 #[cfg(all(feature = "internal", target_arch = "wasm32"))]
 /// Spawn the event loop.
 ///
