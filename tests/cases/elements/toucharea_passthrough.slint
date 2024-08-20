@@ -8,6 +8,8 @@ export component TestCase {
     out property <bool> first-clicked;
     out property <bool> second-pressed;
     out property <bool> second-clicked;
+    out property <bool> underneath-pressed <=> underneath-area.pressed;
+    out property <bool> above-pressed <=> above-area.pressed;
 
     first := Rectangle {
         x: 0px;
@@ -19,14 +21,14 @@ export component TestCase {
         width: 50%;
     }
 
-    TouchArea {
+    underneath-area := TouchArea {
         clicked => {
             first.background = rgb(255, 0, 0);
             root.first-clicked = true;
         }
     }
 
-    TouchArea {
+    above-area := TouchArea {
         event-passthrough: true;
         pointer-event(event) => {
             if (event.kind == PointerEventKind.down) {
@@ -53,12 +55,27 @@ assert(!instance.get_second_clicked());
 ```
 
 ```rust
+use slint::LogicalPosition;
+use slint::platform::{WindowEvent, PointerEventButton};
+
 let instance = TestCase::new().unwrap();
+
 
 slint_testing::send_mouse_click(&instance, 5., 5.);
 assert!(instance.get_first_clicked());
 assert!(instance.get_second_pressed());
 assert!(!instance.get_second_clicked());
+
+assert!(!instance.get_underneath_pressed());
+assert!(!instance.get_above_pressed());
+instance.window().dispatch_event(WindowEvent::PointerMoved { position: LogicalPosition::new(5.0, 5.0) });
+instance.window().dispatch_event(WindowEvent::PointerPressed { position: LogicalPosition::new(5.0, 5.0), button: PointerEventButton::Left });
+assert!(instance.get_underneath_pressed());
+assert!(instance.get_above_pressed());
+instance.window().dispatch_event(WindowEvent::PointerReleased { position: LogicalPosition::new(5.0, 5.0), button: PointerEventButton::Left });
+assert!(!instance.get_underneath_pressed());
+assert!(!instance.get_above_pressed());
+
 ```
 
 ```js
